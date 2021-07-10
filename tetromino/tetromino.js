@@ -1,6 +1,6 @@
-import { Input } from "./input.js";
-import { Board } from "./board.js";
-import { Grid } from "./grid.js";
+import { Input } from "../input.js";
+import { Board } from "../board.js";
+import { Grid } from "../grid.js";
 
 export class Tetromino {
     constructor() {
@@ -32,9 +32,56 @@ export class Tetromino {
             if (this.canMoveLeft() && Input.available && Input.events.left) {
                 this.moveLeft();
             }
-            if (this.canRotateRight() && Input.available && Input.events.up) {
+            if (Input.available && Input.events.up) {
                 Input.events.up = false;
-                this.rotateRight();
+                let rotated = false;
+                if(this.canRotateRight()){
+                    this.rotateRight();
+                    rotated = true;
+                }
+                else { 
+                    if(!rotated){
+                        this.moveRight();
+                        if(this.canRotateRight()){
+                            this.rotateRight();
+                            rotated = true;
+                        }
+                        else{
+                            this.moveLeft();
+                        }
+                    }
+                    if(!rotated){
+                        this.moveLeft();
+                        if(this.canRotateRight()){
+                            this.rotateRight();
+                            rotated = true;
+                        }
+                        else{
+                            this.moveRight();
+                        }
+                    }
+                    if(!rotated){
+                        this.moveDown();
+                        if(this.canRotateRight()){
+                            this.rotateRight();
+                            rotated = true;
+                        }
+                        else{
+                            this.moveUp();
+                        }
+                    }
+                    if(!rotated){
+                        this.moveUp();
+                        if(this.canRotateRight()){
+                            this.rotateRight();
+                            rotated = true;
+                        }
+                        else{
+                            this.moveDown();
+                        }
+                    }
+                }
+                
             }
             if (Input.available && Input.events.space) {
                 this.moveStrikeDown();
