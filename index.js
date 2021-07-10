@@ -43,7 +43,7 @@ function gameLoop() {
 
 setInterval(()=> {
     Input.available = true;
-}, 50)
+}, 70)
 
 setInterval(()=> {
     timer = true;
@@ -62,6 +62,10 @@ document.addEventListener('keydown', function(event) {
     if(event.key === "ArrowUp") {
         Input.events.up = true;
     }
+    if(event.key === " ") {
+        Input.events.space = true;
+    }
+    console.log(event.key);
 });
 
 document.addEventListener('keyup', function(event) {
@@ -76,6 +80,9 @@ document.addEventListener('keyup', function(event) {
     }
     if(event.key === "ArrowUp") {
         Input.events.up = false;
+    }
+    if(event.key === " ") {
+        Input.events.space = false;
     }
 });
 

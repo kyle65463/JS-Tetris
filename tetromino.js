@@ -1,22 +1,20 @@
 import { Input } from "./input.js";
 import { Board } from "./board.js";
+import { Grid } from "./grid.js";
 
 export class Tetromino {
     constructor() {
         this.numGrids = 4;
-        this.idxLeft = 0;
-        this.idxRight = 0;
-        this.idxTop = 0;
-        this.idxBottom = 0;
         this.grids = []; // 4 grids compose a tetromino
         this.axisGrid;
         this.movable = true;
+        this.shadows = [];
     }
 
     update(timer) {
         if (timer) {
             if (this.movable) {
-                if(!this.canMoveDown()) {
+                if (!this.canMoveDown()) {
                     this.movable = false;
                 }
                 else {
@@ -38,28 +36,53 @@ export class Tetromino {
                 Input.events.up = false;
                 this.rotateRight();
             }
-            this.updateIdx();
+            if (Input.available && Input.events.space) {
+                this.moveStrikeDown();
+                Input.events.space = false;
+                this.updateMovable();
+            }
+        }
+        this.updateShadow();
+    }
+
+    updateMovable() {
+        this.movable = this.canMoveDown();
+    }
+
+    updateShadow() {
+        this.shadows = [];
+        if (this.movable) {
+            for (let grid of this.grids) {
+                let shadow = new Grid();
+                [shadow.idxX, shadow.idxY] = [grid.idxX, grid.idxY];
+                shadow.fillStyle = 'rgb(60, 60, 60)';
+                this.shadows.push(shadow);
+            }
+            while (this.shadowCanMoveDown()) {
+                this.shadowMoveDown();
+            }
         }
     }
 
-    updateIdx() {
-        let [idxLeft, idxRight, idxTop, idxBottom] = [100, -100, 100, -100];
-        for (let grid of this.grids) {
-            idxLeft = Math.min(idxLeft, grid.idxX);
-            idxRight = Math.max(idxRight, grid.idxX);
-            idxTop = Math.min(idxTop, grid.idxY);
-            idxBottom = Math.max(idxBottom, grid.idxY);
+    shadowCanMoveDown() {
+        for (let grid of this.shadows) {
+            let idxY = grid.idxY + 1;
+            if (!Board.isGridValid(grid.idxX, idxY))
+                return false;
         }
-        this.idxLeft = idxLeft;
-        this.idxTop = idxTop;
-        this.idxRight = idxRight;
-        this.idxBottom = idxBottom;
+        return true;
+    }
+
+    shadowMoveDown() {
+        for (let grid of this.shadows) {
+            grid.moveDown();
+        }
     }
 
     canMoveRight() {
         for (let grid of this.grids) {
             let idxX = grid.idxX + 1;
-            if(!Board.isGridValid(idxX, grid.idxY))
+            if (!Board.isGridValid(idxX, grid.idxY))
                 return false;
         }
         return true;
@@ -68,16 +91,16 @@ export class Tetromino {
     canMoveLeft() {
         for (let grid of this.grids) {
             let idxX = grid.idxX - 1;
-            if(!Board.isGridValid(idxX, grid.idxY))
+            if (!Board.isGridValid(idxX, grid.idxY))
                 return false;
         }
         return true;
     }
-    
+
     canMoveDown() {
         for (let grid of this.grids) {
             let idxY = grid.idxY + 1;
-            if(!Board.isGridValid(grid.idxX, idxY))
+            if (!Board.isGridValid(grid.idxX, idxY))
                 return false;
         }
         return true;
@@ -107,13 +130,19 @@ export class Tetromino {
         }
     }
 
+    moveStrikeDown() {
+        while (this.canMoveDown()) {
+            this.moveDown();
+        }
+    }
+
     canRotateRight() {
         for (let grid of this.grids) {
             let disX = grid.idxX - this.axisGrid.idxX;
             let disY = grid.idxY - this.axisGrid.idxY;
             let idxX = this.axisGrid.idxX - disY;
             let idxY = this.axisGrid.idxY + disX;
-            if(!Board.isGridValid(idxX, idxY))
+            if (!Board.isGridValid(idxX, idxY))
                 return false;
         }
         return true;
@@ -129,6 +158,9 @@ export class Tetromino {
     }
 
     render(ctx) {
+        for (let grid of this.shadows) {
+            grid.render(ctx);
+        }
         for (let grid of this.grids) {
             grid.render(ctx);
         }
