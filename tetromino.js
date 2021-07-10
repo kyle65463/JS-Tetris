@@ -12,19 +12,26 @@ export class Tetromino {
         this.movable = true;
     }
 
-    update() {
+    update(timer) {
+        if (timer) {
+            if (this.movable) {
+                if(!this.canMoveDown()) {
+                    this.movable = false;
+                }
+                else {
+                    this.moveDown();
+                }
+            }
+        }
         if (this.movable) {
-            if (this.idxRight < Board.getRightBounds() && Input.events.right) {
+            if (this.canMoveRight() && Input.available && Input.events.right) {
                 this.moveRight();
             }
-            if (this.idxBottom < Board.getBottomBounds() && Input.events.down) {
+            if (this.canMoveDown() && Input.available && Input.events.down) {
                 this.moveDown();
             }
-            if (this.idxLeft > Board.getLeftBounds() && Input.events.left) {
+            if (this.canMoveLeft() && Input.available && Input.events.left) {
                 this.moveLeft();
-            }
-            if (this.idxTop > Board.getTopBounds() && Input.events.up) {
-                this.moveUp();
             }
             this.updateIdx();
         }
@@ -42,6 +49,33 @@ export class Tetromino {
         this.idxTop = idxTop;
         this.idxRight = idxRight;
         this.idxBottom = idxBottom;
+    }
+
+    canMoveRight() {
+        for (let grid of this.grids) {
+            let idxX = grid.idxX + 1;
+            if(idxX > Board.getRightBounds() || Board.hasBlock[grid.idxY][idxX])
+                return false;
+        }
+        return true;
+    }
+
+    canMoveLeft() {
+        for (let grid of this.grids) {
+            let idxX = grid.idxX - 1;
+            if(idxX < Board.getLeftBounds() || Board.hasBlock[grid.idxY][idxX])
+                return false;
+        }
+        return true;
+    }
+    
+    canMoveDown() {
+        for (let grid of this.grids) {
+            let idxY = grid.idxY + 1;
+            if(idxY > Board.getBottomBounds() || Board.hasBlock[idxY][grid.idxX])
+                return false;
+        }
+        return true;
     }
 
     moveRight() {

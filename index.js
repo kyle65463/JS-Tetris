@@ -10,27 +10,44 @@ canvas.height = window.innerHeight;
 
 const board = new Board();
 
-let tetrominos = [new TetrominoS()];
+let timer = false;
+let movingTetromino = new TetrominoS();
+let tetrominos = [];
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Update
-    board.update();
+    board.update(tetrominos);
     for(let tetromino of tetrominos) {
-        tetromino.update();
+        tetromino.update(timer);
     }
+    movingTetromino.update(timer);
 
     // Render
     board.render(ctx);
     for(let tetromino of tetrominos) {
         tetromino.render(ctx);
     }
+    movingTetromino.render(ctx);
+
+    if (!movingTetromino.movable) {
+        tetrominos.push(movingTetromino);
+        movingTetromino = new TetrominoS();
+    }
     
     // End
+    timer = false;
+    Input.available = false;
     window.requestAnimationFrame(gameLoop);
 }
 
+setInterval(()=> {
+    Input.available = true;
+}, 50)
 
+setInterval(()=> {
+    timer = true;
+}, 1000)
 
 document.addEventListener('keydown', function(event) {
     if(event.key === "ArrowLeft") {

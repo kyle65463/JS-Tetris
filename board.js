@@ -7,14 +7,17 @@ export class Board{
         for(let i = 0; i < Board.getNumGridY(); i++) {
             this.grids.push([]);
             Board.pos.push([]);
+            Board.hasBlock.push([]);
             for(let j = 0; j < Board.getNumGridX(); j++) {
                 this.grids[i].push(new BackgroundGrid());
+                Board.hasBlock[i].push(false);
             }
         }
         this.updatePos();
     }
 
     static pos = [];
+    static hasBlock = [];
 
     static getPos(idxX, idxY) {
         return Board.pos[idxY][idxX];
@@ -40,6 +43,10 @@ export class Board{
         return Board.getNumGridX() - 1;
     }
 
+    static canMoveDown() {
+
+    }
+
     static getLeftBounds() {
         return 0;
     }
@@ -61,8 +68,19 @@ export class Board{
         }
     }   
 
-    update() {
+    updateHasBlock(tetrominos) {
+        for(let tetromino of tetrominos) {
+            if(!tetromino.movable) {
+                for(let grid of tetromino.grids) { 
+                    Board.hasBlock[grid.idxY][grid.idxX] = true; 
+                }
+            }
+        }
+    }
+
+    update(tetrominos) {
         this.updatePos();
+        this.updateHasBlock(tetrominos);
     }
 
     render(ctx) {
