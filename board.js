@@ -23,6 +23,14 @@ export class Board{
         return Board.pos[idxY][idxX];
     }
 
+    static isGridValid(idxX, idxY) {
+        let horizInBound = idxX >= Board.getLeftBounds() && idxX <= Board.getRightBounds();
+        let vertInBound = idxY >= Board.getTopBounds() && idxY <= Board.getBottomBounds();
+        if(!horizInBound || ! vertInBound) return false;
+        if(Board.hasBlock[idxY][idxX]) return false;
+        return true;
+    }
+
     static getNumGridX() {
         return 10;
     }

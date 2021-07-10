@@ -9,6 +9,7 @@ export class Tetromino {
         this.idxTop = 0;
         this.idxBottom = 0;
         this.grids = []; // 4 grids compose a tetromino
+        this.axisGrid;
         this.movable = true;
     }
 
@@ -33,6 +34,10 @@ export class Tetromino {
             if (this.canMoveLeft() && Input.available && Input.events.left) {
                 this.moveLeft();
             }
+            if (this.canRotateRight() && Input.available && Input.events.up) {
+                Input.events.up = false;
+                this.rotateRight();
+            }
             this.updateIdx();
         }
     }
@@ -54,7 +59,7 @@ export class Tetromino {
     canMoveRight() {
         for (let grid of this.grids) {
             let idxX = grid.idxX + 1;
-            if(idxX > Board.getRightBounds() || Board.hasBlock[grid.idxY][idxX])
+            if(!Board.isGridValid(idxX, grid.idxY))
                 return false;
         }
         return true;
@@ -63,7 +68,7 @@ export class Tetromino {
     canMoveLeft() {
         for (let grid of this.grids) {
             let idxX = grid.idxX - 1;
-            if(idxX < Board.getLeftBounds() || Board.hasBlock[grid.idxY][idxX])
+            if(!Board.isGridValid(idxX, grid.idxY))
                 return false;
         }
         return true;
@@ -72,7 +77,7 @@ export class Tetromino {
     canMoveDown() {
         for (let grid of this.grids) {
             let idxY = grid.idxY + 1;
-            if(idxY > Board.getBottomBounds() || Board.hasBlock[idxY][grid.idxX])
+            if(!Board.isGridValid(grid.idxX, idxY))
                 return false;
         }
         return true;
@@ -99,6 +104,27 @@ export class Tetromino {
     moveDown() {
         for (let grid of this.grids) {
             grid.moveDown();
+        }
+    }
+
+    canRotateRight() {
+        for (let grid of this.grids) {
+            let disX = grid.idxX - this.axisGrid.idxX;
+            let disY = grid.idxY - this.axisGrid.idxY;
+            let idxX = this.axisGrid.idxX - disY;
+            let idxY = this.axisGrid.idxY + disX;
+            if(!Board.isGridValid(idxX, idxY))
+                return false;
+        }
+        return true;
+    }
+
+    rotateRight() {
+        for (let grid of this.grids) {
+            let disX = grid.idxX - this.axisGrid.idxX;
+            let disY = grid.idxY - this.axisGrid.idxY;
+            grid.idxX = this.axisGrid.idxX - disY;
+            grid.idxY = this.axisGrid.idxY + disX;
         }
     }
 

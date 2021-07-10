@@ -11,6 +11,7 @@ export class TetrominoS extends Tetromino{
             [grid.idxX, grid.idxY]  = posPair[i];
             this.grids.push(grid);
         }
+        this.axisGrid = this.grids[2];
         super.updateIdx();
     }
 }
