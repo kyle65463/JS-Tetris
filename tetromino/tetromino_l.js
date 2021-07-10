@@ -11,6 +11,7 @@ export class TetrominoL extends Tetromino{
             [grid.idxX, grid.idxY]  = posPair[i];
             this.grids.push(grid);
         }
-        this.axisGrid = this.grids[2];
+        this.rotationOffsets = [[0, 0], [0, 0], [0, 0], [0, 0]];
+        this.axisGrid = this.grids[1];
     }
 }

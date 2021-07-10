@@ -8,6 +8,8 @@ export class Tetromino {
         this.grids = []; // 4 grids compose a tetromino
         this.axisGrid;
         this.movable = true;
+        this.rotationPhase = 0;
+        this.rotationOffsets = [];
         this.shadows = [];
     }
 
@@ -34,54 +36,7 @@ export class Tetromino {
             }
             if (Input.available && Input.events.up) {
                 Input.events.up = false;
-                let rotated = false;
-                if(this.canRotateRight()){
-                    this.rotateRight();
-                    rotated = true;
-                }
-                else { 
-                    if(!rotated){
-                        this.moveRight();
-                        if(this.canRotateRight()){
-                            this.rotateRight();
-                            rotated = true;
-                        }
-                        else{
-                            this.moveLeft();
-                        }
-                    }
-                    if(!rotated){
-                        this.moveLeft();
-                        if(this.canRotateRight()){
-                            this.rotateRight();
-                            rotated = true;
-                        }
-                        else{
-                            this.moveRight();
-                        }
-                    }
-                    if(!rotated){
-                        this.moveDown();
-                        if(this.canRotateRight()){
-                            this.rotateRight();
-                            rotated = true;
-                        }
-                        else{
-                            this.moveUp();
-                        }
-                    }
-                    if(!rotated){
-                        this.moveUp();
-                        if(this.canRotateRight()){
-                            this.rotateRight();
-                            rotated = true;
-                        }
-                        else{
-                            this.moveDown();
-                        }
-                    }
-                }
-                
+                this.tryRotateRight();
             }
             if (Input.available && Input.events.space) {
                 this.moveStrikeDown();
@@ -183,12 +138,80 @@ export class Tetromino {
         }
     }
 
-    canRotateRight() {
+    tryRotateRight() {
+        let rotated = false;
+
+        if (this.canRotateRight()) {
+            this.rotateRight();
+            rotated = true;
+        }
+        else {
+            if (!rotated) {
+                this.moveRight();
+                if (this.canRotateRight()) {
+                    this.rotateRight();
+                    rotated = true;
+                }
+                else {
+                    this.moveLeft();
+                }
+            }
+            if (!rotated) {
+                this.moveLeft();
+                if (this.canRotateRight()) {
+                    this.rotateRight();
+                    rotated = true;
+                }
+                else {
+                    this.moveRight();
+                }
+            }
+            if (!rotated) {
+                this.moveDown();
+                if (this.canRotateRight()) {
+                    this.rotateRight();
+                    rotated = true;
+                }
+                else {
+                    this.moveUp();
+                }
+            }
+            if (!rotated) {
+                this.moveUp();
+                if (this.canRotateRight()) {
+                    this.rotateRight();
+                    rotated = true;
+                }
+                else {
+                    this.moveDown();
+                }
+            }
+        }
+        return rotated;
+    }
+
+    canRotateLeft() {
+        let [axisIdxX, axisIdxY] = [this.axisGrid.idxX, this.axisGrid.idxY];
+        let [rotationOffsetX, rotationOffsetY] = this.rotationOffsets[this.rotationPhase];
         for (let grid of this.grids) {
-            let disX = grid.idxX - this.axisGrid.idxX;
-            let disY = grid.idxY - this.axisGrid.idxY;
-            let idxX = this.axisGrid.idxX - disY;
-            let idxY = this.axisGrid.idxY + disX;
+            let disX = grid.idxX - axisIdxX;
+            let disY = grid.idxY - axisIdxY;
+            let idxX = axisIdxX + disY + rotationOffsetX
+            let idxY = axisIdxY - disX + rotationOffsetY
+            if (!Board.isGridValid(idxX, idxY))
+                return false;
+        }
+        return true;
+    }
+
+    canRotateRight() {
+        let [axisIdxX, axisIdxY] = [this.axisGrid.idxX, this.axisGrid.idxY];
+        let [rotationOffsetX, rotationOffsetY] = this.rotationOffsets[this.rotationPhase];
+        for (let grid of this.grids) {
+            let disX = grid.idxX - axisIdxX;
+            let disY = grid.idxY - axisIdxY;
+            let idxX = axisIdxX - disY + rotationOffsetX
+            let idxY = axisIdxY + disX + rotationOffsetY
             if (!Board.isGridValid(idxX, idxY))
                 return false;
         }
@@ -196,12 +219,29 @@ export class Tetromino {
     }
 
     rotateRight() {
+        let [axisIdxX, axisIdxY] = [this.axisGrid.idxX, this.axisGrid.idxY];
+        let [rotationOffsetX, rotationOffsetY] = this.rotationOffsets[this.rotationPhase];
         for (let grid of this.grids) {
-            let disX = grid.idxX - this.axisGrid.idxX;
-            let disY = grid.idxY - this.axisGrid.idxY;
-            grid.idxX = this.axisGrid.idxX - disY;
-            grid.idxY = this.axisGrid.idxY + disX;
+            let disX = grid.idxX - axisIdxX;
+            let disY = grid.idxY - axisIdxY;
+            grid.idxX = axisIdxX - disY + rotationOffsetX
+            grid.idxY = axisIdxY + disX + rotationOffsetY
         }
+        this.rotationPhase++;
+        this.rotationPhase %= 4;
+    }
+
+    rotateLeft() {
+        let [axisIdxX, axisIdxY] = [this.axisGrid.idxX, this.axisGrid.idxY];
+        let [rotationOffsetX, rotationOffsetY] = this.rotationOffsets[this.rotationPhase];
+        for (let grid of this.grids) {
+            let disX = grid.idxX - axisIdxX;
+            let disY = grid.idxY - axisIdxY;
+            grid.idxX = axisIdxX + disY + rotationOffsetX
+            grid.idxY = axisIdxY - disX + rotationOffsetY
+        }
+        this.rotationPhase++;
+        this.rotationPhase %= 4;
     }
 
     render(ctx) {

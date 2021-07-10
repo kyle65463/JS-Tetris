@@ -18,6 +18,6 @@ export class TetrominoFactory {
     ];
 
     static randomCreate() {
-        return new TetrominoFactory.tetrominos[Math.floor(Math.random() * TetrominoFactory.tetrominos.length)];
+        return new TetrominoFactory.tetrominos[6]//Math.floor(Math.random() * TetrominoFactory.tetrominos.length)];
     }
 }
