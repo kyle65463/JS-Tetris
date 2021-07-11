@@ -78,18 +78,25 @@ body {
 
 #score-menu {
 	position: absolute;
-	top: 60%;
+	top: 50%;
 	left: 30%;
 	color: black;
 }
 
-#score-menu p {
+#level-menu {
+	position: absolute;
+	top: 65%;
+	left: 30%;
+	color: black;
+}
+
+#score-menu p, #level-menu p {
 	font-size: 19px;
 	margin: 0px;
 	padding: 0px;
 }
 
-#score-label {
+#score-label, #level-label {
 	font-family: "Righteous";
 	font-size: 40px !important;
 }

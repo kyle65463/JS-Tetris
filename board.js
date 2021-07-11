@@ -152,7 +152,7 @@ export class Board {
 		let clearedLineIds = this.clearLine();
 		this.dropAllGrids(grids, clearedLineIds);
 		let score = this.calculateScore(clearedLineIds.length);
-		return score;
+		return [score, clearedLineIds.length];
 	}
 
 	render(ctx) {

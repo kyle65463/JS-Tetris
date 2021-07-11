@@ -8,6 +8,7 @@ const canvas = document.querySelector("canvas");
 const pauseMenu = document.getElementById("pause-menu");
 const gameOverMenu = document.getElementById("game-over-menu");
 const scoreLabel = document.getElementById("score-label");
+const levelLabel = document.getElementById("level-label");
 const restartButton = document.getElementById("restart-button");
 const continueButton = document.getElementById("continue-button");
 const startButton = document.getElementById("start-button");
@@ -29,6 +30,34 @@ let isPaused = false;
 let isStarted = false;
 let isGameOver = false;
 let score = 0;
+let numClearedLine = 0;
+let level = 1;
+
+function updateLevel() {
+	let updated = false;
+	if (level <= 5 && numClearedLine >= 5) {
+		level++;
+		numClearedLine -= 5;
+		updated = true;
+	}
+	if (level <= 10 && numClearedLine >= 10) {
+		level++;
+		numClearedLine -= 10;
+		updated = true;
+	}
+	if (level <= 15 && numClearedLine >= 15) {
+		level++;
+		numClearedLine -= 15;
+		updated = true;
+	}
+	if (updated) {
+		clearInterval(gameInterval);
+		gameInterval = setInterval(() => {
+			timer = true;
+		}, 1000 - (level - 1) * 50);
+		levelLabel.innerHTML = level.toString();
+	}
+}
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -42,7 +71,10 @@ function gameLoop() {
 			movingTetromino = nextArea.getNextTetromino();
 			movingTetromino.setInBoard();
 		}
-		score += board.update(grids);
+		let [newScore, newNumClearedLine] = board.update(grids);
+		score += newScore * level;
+		numClearedLine += newNumClearedLine;
+		updateLevel();
 		movingTetromino = holdArea.update(movingTetromino);
 		if (!movingTetromino) {
 			movingTetromino = nextArea.getNextTetromino();
@@ -76,8 +108,8 @@ function gameLoop() {
 	window.requestAnimationFrame(gameLoop.bind(this));
 }
 
-let interval1 = null;
-let interval2 = null;
+let inputInterval = null;
+let gameInterval = null;
 function gameStart() {
 	if (!isStarted) {
 		startButton.onclick = null;
@@ -87,11 +119,11 @@ function gameStart() {
 		isStarted = true;
 
 		nextArea.intialize();
-		interval1 = setInterval(() => {
+		inputInterval = setInterval(() => {
 			Input.available = true;
 		}, 70);
 
-		interval2 = setInterval(() => {
+		gameInterval = setInterval(() => {
 			timer = true;
 		}, 1000);
 	}
@@ -113,6 +145,8 @@ function gameReset() {
 		startButton.onclick = gameStart;
 		startButton.classList.remove("invisible");
 		score = 0;
+		numClearedLine = 0;
+		level = 1;
 		movingTetromino = null;
 		isStarted = false;
 		isPaused = false;
@@ -121,8 +155,8 @@ function gameReset() {
 		grids = [];
 		nextArea.reset();
 		holdArea.reset();
-		clearInterval(interval1);
-		clearInterval(interval2);
+		clearInterval(inputInterval);
+		clearInterval(gameInterval);
 		gameOverMenu.classList.add("invisible");
 		pauseMenu.classList.add("invisible");
 		homeButton.onclick = null;
@@ -146,24 +180,26 @@ function gamePause() {
 }
 
 document.addEventListener("keydown", function (event) {
-	if (isStarted && !isPaused) {
-		if (event.key === "ArrowLeft") {
-			Input.events.left = true;
-		}
-		if (event.key === "ArrowRight") {
-			Input.events.right = true;
-		}
-		if (event.key === "ArrowDown") {
-			Input.events.down = true;
-		}
-		if (event.key === "ArrowUp") {
-			Input.events.up = true;
-		}
-		if (event.key === " ") {
-			Input.events.space = true;
-		}
-		if (event.key === "c") {
-			Input.events.c = true;
+	if (isStarted) {
+		if (!isPaused) {
+			if (event.key === "ArrowLeft") {
+				Input.events.left = true;
+			}
+			if (event.key === "ArrowRight") {
+				Input.events.right = true;
+			}
+			if (event.key === "ArrowDown") {
+				Input.events.down = true;
+			}
+			if (event.key === "ArrowUp") {
+				Input.events.up = true;
+			}
+			if (event.key === " ") {
+				Input.events.space = true;
+			}
+			if (event.key === "c") {
+				Input.events.c = true;
+			}
 		}
 		if (event.key === "Escape") {
 			event.preventDefault();
