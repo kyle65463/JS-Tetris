@@ -36,7 +36,7 @@ export class Grid{
         if(!this.inBoard) 
             [posX, posY] = [this.posX, this.posY]
         ctx.fillStyle = this.fillStyle;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 * this.shrinkFactor;
         ctx.fillRect(posX, posY, Grid.getSize() * this.shrinkFactor, Grid.getSize() * this.shrinkFactor);
         ctx.strokeStyle = this.strokeStyle;
         ctx.strokeRect(posX, posY, Grid.getSize() * this.shrinkFactor, Grid.getSize() * this.shrinkFactor);

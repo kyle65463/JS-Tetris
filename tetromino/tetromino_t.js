@@ -7,7 +7,7 @@ export class TetrominoT extends Tetromino{
         let posPair = [[0, 1], [1, 0], [1, 1], [2, 1]]
         for (let i = 0; i < this.numGrids; i++) {
             let grid = new Grid();
-            grid.fillStyle = 'purple';
+            grid.fillStyle = 'rgb(170, 0, 170)';
             [grid.idxX, grid.idxY]  = posPair[i];
             this.grids.push(grid);
         }

@@ -9,7 +9,9 @@ export class Board {
             Board.pos.push([]);
             Board.hasGrid.push([]);
             for (let j = 0; j < Board.getNumGridX(); j++) {
-                this.grids[i].push(new BackgroundGrid());
+                let grid = new BackgroundGrid();
+                [grid.idxX, grid.idxY] = [j, i];
+                this.grids[i].push(grid);
                 Board.hasGrid[i].push(false);
             }
         }
@@ -37,6 +39,14 @@ export class Board {
 
     static getNumGridY() {
         return 20;
+    }
+
+    static getHeight() {
+        return Board.getNumGridY() * Grid.getSize();
+    }
+
+    static getWidth() {
+        return Board.getNumGridX() * Grid.getSize();
     }
 
     static getTopBounds() {
@@ -127,13 +137,13 @@ export class Board {
     }
 
     render(ctx) {
-        for (let i = 0; i < Board.getNumGridY(); i++) {
-            for (let j = 0; j < Board.getNumGridX(); j++) {
-                let grid = this.grids[i][j];
-                grid.idxX = j;
-                grid.idxY = i;
-                grid.render(ctx);
-            }
-        }
+        for (let i = 0; i < Board.getNumGridY(); i++)
+            for (let j = 0; j < Board.getNumGridX(); j++)
+                this.grids[i][j].render(ctx);
+
+        let [posStartX, posStartY] = Board.pos[0][0];
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(posStartX, posStartY, Board.getWidth(), Board.getHeight());
     }
 };
