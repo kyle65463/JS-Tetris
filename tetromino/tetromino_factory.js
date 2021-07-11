@@ -1,6 +1,6 @@
 import { TetrominoS } from "./tetromino_s.js";
 import { TetrominoN } from "./tetromino_n.js";
-import { TetrominoT } from "./tetromino_T.js";
+import { TetrominoT } from "./tetromino_t.js";
 import { TetrominoI } from "./tetromino_i.js";
 import { TetrominoO } from "./tetromino_o.js";
 import { TetrominoL } from "./tetromino_l.js";
