@@ -1,6 +1,6 @@
 import { Board } from "./board.js";
 import { Input } from "./input.js";
-import { TetrominoO} from "./tetromino/tetromino_o.js";
+import { TetrominoO } from "./tetromino/tetromino_o.js";
 import { TetrominoFactory } from "./tetromino/tetromino_factory.js";
 
 
@@ -17,30 +17,33 @@ let movingTetromino = TetrominoFactory.randomCreate();
 let tetrominos = [];
 
 function gameLoop() {
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Update
-    board.update(tetrominos);
-    for (let tetromino of tetrominos) {
-        tetromino.update(timer);
-    }
     movingTetromino.update(timer);
+    if (!movingTetromino.movable) {
+        for (let grid of movingTetromino.grids) {
+            tetrominos.push(grid);
+        }
+        movingTetromino = TetrominoFactory.randomCreate();
+    }
+    board.update(tetrominos);
 
     // Render
     board.render(ctx);
-    for (let tetromino of tetrominos) {
-        tetromino.render(ctx);
+    for (let grid of tetrominos) {
+        grid.render(ctx);
     }
     movingTetromino.render(ctx);
-
-    if (!movingTetromino.movable) {
-        tetrominos.push(movingTetromino);
-        movingTetromino = TetrominoFactory.randomCreate();
-    }
 
     // End
     timer = false;
     Input.available = false;
-    window.requestAnimationFrame(gameLoop);
+
+    // setTimeout(()=>{
+        window.requestAnimationFrame(gameLoop.bind(this));
+    // }, 200)
+    
 }
 
 setInterval(() => {

@@ -1,23 +1,23 @@
 import { BackgroundGrid } from "./background_grid.js";
 import { Grid } from "./grid.js";
 
-export class Board{
+export class Board {
     constructor() {
         this.grids = [];
-        for(let i = 0; i < Board.getNumGridY(); i++) {
+        for (let i = 0; i < Board.getNumGridY(); i++) {
             this.grids.push([]);
             Board.pos.push([]);
-            Board.hasBlock.push([]);
-            for(let j = 0; j < Board.getNumGridX(); j++) {
+            Board.hasGrid.push([]);
+            for (let j = 0; j < Board.getNumGridX(); j++) {
                 this.grids[i].push(new BackgroundGrid());
-                Board.hasBlock[i].push(false);
+                Board.hasGrid[i].push(false);
             }
         }
         this.updatePos();
     }
 
     static pos = [];
-    static hasBlock = [];
+    static hasGrid = [];
 
     static getPos(idxX, idxY) {
         return Board.pos[idxY][idxX];
@@ -26,8 +26,8 @@ export class Board{
     static isGridValid(idxX, idxY) {
         let horizInBound = idxX >= Board.getLeftBounds() && idxX <= Board.getRightBounds();
         let vertInBound = idxY >= Board.getTopBounds() && idxY <= Board.getBottomBounds();
-        if(!horizInBound || ! vertInBound) return false;
-        if(Board.hasBlock[idxY][idxX]) return false;
+        if (!horizInBound || !vertInBound) return false;
+        if (Board.hasGrid[idxY][idxX]) return false;
         return true;
     }
 
@@ -66,34 +66,73 @@ export class Board{
 
         let posX = posStartX;
         let posY = posCenterY - (Board.getNumGridY() * Grid.getSize() / 2);
-        for(let i = 0; i < Board.getNumGridY(); i++) {
-            for(let j = 0; j < Board.getNumGridX(); j++) {
+        for (let i = 0; i < Board.getNumGridY(); i++) {
+            for (let j = 0; j < Board.getNumGridX(); j++) {
                 Board.pos[i][j] = [posX, posY];
                 posX += Grid.getSize();
             }
             posX = posStartX;
             posY += Grid.getSize();
         }
-    }   
+    }
 
-    updateHasBlock(tetrominos) {
-        for(let tetromino of tetrominos) {
-            if(!tetromino.movable) {
-                for(let grid of tetromino.grids) { 
-                    Board.hasBlock[grid.idxY][grid.idxX] = true; 
-                }
+    updateHasGrid(tetrominos) {
+        // Clear first
+        for (let i = 0; i < Board.getNumGridY(); i++)
+            for (let j = 0; j < Board.getNumGridX(); j++)
+                Board.hasGrid[i][j] = false;
+
+        for (let grid of tetrominos) {
+            Board.hasGrid[grid.idxY][grid.idxX] = true;
+        }
+    }
+
+    clearLine() {
+        let clearedLineIds = []
+        for (let i = 0; i < Board.getNumGridY(); i++) {
+            let numGrids = 0;
+            for (let j = 0; j < Board.getNumGridX(); j++) {
+                if (Board.hasGrid[i][j])
+                    numGrids++;
+            }
+
+            if (numGrids >= Board.getNumGridX()) {
+                console.log('clear ' + i)
+                clearedLineIds.push(i);
+            }
+        }
+        return clearedLineIds;
+    }
+
+    dropAllGrids(grids, clearedLineIds) {
+        let deletedGrids = [];
+        for (let grid of grids) {
+            for (let clearedLineId of clearedLineIds) {
+                if (grid.idxY < clearedLineId)
+                    grid.moveDown();
+                else if (grid.idxY == clearedLineId)
+                    deletedGrids.push(grid);
+            }
+        }
+        this.updateHasGrid(grids);
+        for (let grid of deletedGrids) {
+            let index = grids.indexOf(grid);
+            if (index > -1) {
+                grids.splice(index, 1);
             }
         }
     }
 
-    update(tetrominos) {
+    update(grids) {
         this.updatePos();
-        this.updateHasBlock(tetrominos);
+        this.updateHasGrid(grids);
+        let clearedLineIds = this.clearLine();
+        this.dropAllGrids(grids, clearedLineIds);
     }
 
     render(ctx) {
-        for(let i = 0; i < Board.getNumGridY(); i++) {
-            for(let j = 0; j < Board.getNumGridX(); j++) {
+        for (let i = 0; i < Board.getNumGridY(); i++) {
+            for (let j = 0; j < Board.getNumGridX(); j++) {
                 let grid = this.grids[i][j];
                 grid.idxX = j;
                 grid.idxY = i;
