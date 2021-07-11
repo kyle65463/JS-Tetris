@@ -3,6 +3,9 @@ import { Input } from "./input.js";
 import { TetrominoFactory } from "./tetromino/tetromino_factory.js";
 import { HoldArea } from "./hold_area.js";
 import { NextArea } from "./next_area.js";
+import { AudioPlayer } from "./audio_player.js";
+
+AudioPlayer.initialize();
 
 const canvas = document.querySelector("canvas");
 const pauseMenu = document.getElementById("pause-menu");
@@ -63,6 +66,7 @@ function updateLevel() {
 			timer = true;
 		}, 1000 - (level - 1) * 65);
 		levelLabel.innerHTML = level.toString();
+		AudioPlayer.playLevelUpAudio();
 	}
 }
 
@@ -118,6 +122,7 @@ let inputInterval = null;
 let gameInterval = null;
 function gameStart() {
 	if (!isStarted) {
+		AudioPlayer.playGameStartAudio();
 		startButton.onclick = null;
 		startButton.classList.add("invisible");
 		movingTetromino = TetrominoFactory.randomCreate();
@@ -136,9 +141,16 @@ function gameStart() {
 }
 
 function gameOver() {
+	AudioPlayer.playGameOverAudio();
 	gameOverMenu.classList.remove("invisible");
-	gameOverRestartButton.onclick = gameRestart;
-	gameOverHomeButton.onclick = gameReset;
+	gameOverRestartButton.onclick = () => {
+		AudioPlayer.playClickAudio();
+		gameRestart();
+	};
+	gameOverHomeButton.onclick = () => {
+		AudioPlayer.playClickAudio();
+		gameReset();
+	};
 	gameOverScoreLabel.innerHTML = "分數: " + score.toString();
 }
 
@@ -149,7 +161,10 @@ function gameRestart() {
 
 function gameReset() {
 	if (isStarted) {
-		startButton.onclick = gameStart;
+		startButton.onclick = () => {
+			AudioPlayer.playClickAudio();
+			gameStart();
+		};
 		startButton.classList.remove("invisible");
 		score = 0;
 		numClearedLine = 0;
@@ -168,6 +183,7 @@ function gameReset() {
 		pauseMenu.classList.add("invisible");
 		gameOverHomeButton.onclick = null;
 		gameOverRestartButton.onclick = null;
+		levelLabel.innerHTML = level.toString();
 		continueButton.onclick = null;
 		restartButton.onclick = null;
 		homeButton.onclick = null;
@@ -178,9 +194,18 @@ function gamePause() {
 	isPaused = !isPaused;
 	if (isPaused) {
 		pauseMenu.classList.remove("invisible");
-		continueButton.onclick = gamePause;
-		restartButton.onclick = gameRestart;
-		homeButton.onclick = gameReset;
+		continueButton.onclick = () => {
+			AudioPlayer.playClickAudio();
+			gamePause();
+		};
+		restartButton.onclick = () => {
+			AudioPlayer.playClickAudio();
+			gameRestart();
+		};
+		homeButton.onclick = () => {
+			AudioPlayer.playClickAudio();
+			gameReset();
+		};
 	} else {
 		pauseMenu.classList.add("invisible");
 		homeButton.onclick = null;
@@ -214,6 +239,7 @@ document.addEventListener("keydown", function (event) {
 
 		if (event.key === "Escape") {
 			event.preventDefault();
+			AudioPlayer.playClickAudio();
 			gamePause();
 		}
 	}
@@ -224,18 +250,22 @@ document.addEventListener("keydown", function (event) {
 
 	if (event.key === "r") {
 		if (isPaused || isGameOver) {
+			AudioPlayer.playClickAudio();
 			gameRestart();
 		}
 	}
 
 	if (event.key === "Enter" || event.key === " ") {
 		if (isPaused) {
+			AudioPlayer.playClickAudio();
 			gamePause();
 		}
 		if (!isStarted) {
+			AudioPlayer.playClickAudio();
 			gameStart();
 		}
 		if (isGameOver && event.key === "Enter") {
+			AudioPlayer.playClickAudio();
 			gameReset();
 		}
 	}
@@ -256,5 +286,8 @@ document.addEventListener("keyup", function (event) {
 	}
 });
 
-startButton.onclick = gameStart;
+startButton.onclick = () => {
+	AudioPlayer.playClickAudio();
+	gameStart();
+};
 gameLoop();

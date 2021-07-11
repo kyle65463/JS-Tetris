@@ -1,5 +1,6 @@
 import { BackgroundGrid } from "./background_grid.js";
 import { Grid } from "./grid.js";
+import { AudioPlayer } from "./audio_player.js";
 
 export class Board {
 	constructor() {
@@ -129,6 +130,7 @@ export class Board {
         if(numClearedLine <= 0) {
             return 0;
         }
+		AudioPlayer.playClearLineAudio()
 		if (numClearedLine == 1) {
 			return 1;
 		}
