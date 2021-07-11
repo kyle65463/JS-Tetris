@@ -41,24 +41,30 @@ function updateLevel() {
 		numClearedLine -= 5;
 		updated = true;
 	}
-	if (level <= 10 && numClearedLine >= 10) {
+	if (level <= 9 && numClearedLine >= 12) {
 		level++;
-		numClearedLine -= 10;
+		numClearedLine -= 12;
 		updated = true;
 	}
-	if (level <= 15 && numClearedLine >= 15) {
+	if (level <= 12 && numClearedLine >= 20) {
 		level++;
-		numClearedLine -= 15;
+		numClearedLine -= 20;
+		updated = true;
+	}
+	if (level < 15 && numClearedLine >= 30) {
+		level++;
+		numClearedLine -= 30;
 		updated = true;
 	}
 	if (updated) {
 		clearInterval(gameInterval);
 		gameInterval = setInterval(() => {
 			timer = true;
-		}, 1000 - (level - 1) * 50);
+		}, 1000 - (level - 1) * 65);
 		levelLabel.innerHTML = level.toString();
 	}
 }
+
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -105,7 +111,6 @@ function gameLoop() {
 
 	// End
 	timer = false;
-	Input.available = false;
 	window.requestAnimationFrame(gameLoop.bind(this));
 }
 
@@ -118,12 +123,12 @@ function gameStart() {
 		movingTetromino = TetrominoFactory.randomCreate();
 		movingTetromino.setInBoard();
 		isStarted = true;
+		Input.moveAvailable = true;
+		Input.rotationAvailable = true;
+		Input.strikeAvailable = true;
+		Input.holdAvailable = true;
 
 		nextArea.intialize();
-		inputInterval = setInterval(() => {
-			Input.available = true;
-		}, 70);
-
 		gameInterval = setInterval(() => {
 			timer = true;
 		}, 1000);

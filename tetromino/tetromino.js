@@ -27,23 +27,43 @@ export class Tetromino {
             }
         }
         if (this.movable) {
-            if (this.canMoveRight() && Input.available && Input.events.right) {
+            if (this.canMoveRight() && Input.moveAvailable && Input.events.right) {
                 this.moveRight();
+                Input.moveAvailable = false;
+                setTimeout(() => {
+                    Input.moveAvailable = true;
+                }, 70);
             }
-            if (this.canMoveDown() && Input.available && Input.events.down) {
+            if (this.canMoveDown() && Input.moveAvailable && Input.events.down) {
                 this.moveDown();
+                Input.moveAvailable = false;
+                setTimeout(() => {
+                    Input.moveAvailable = true;
+                }, 70);
             }
-            if (this.canMoveLeft() && Input.available && Input.events.left) {
+            if (this.canMoveLeft() && Input.moveAvailable && Input.events.left) {
                 this.moveLeft();
+                Input.moveAvailable = false;
+                setTimeout(() => {
+                    Input.moveAvailable = true;
+                }, 70);
             }
-            if (Input.available && Input.events.up) {
+            if (Input.rotationAvailable && Input.events.up) {
                 Input.events.up = false;
                 this.tryRotateRight();
+                Input.rotationAvailable = false;
+                setTimeout(() => {
+                    Input.rotationAvailable = true;
+                }, 100);
             }
-            if (Input.available && Input.events.space) {
+            if (Input.strikeAvailable && Input.events.space) {
                 this.moveStrikeDown();
                 Input.events.space = false;
                 this.updateMovable();
+                Input.strikeAvailable = false;
+                setTimeout(() => {
+                    Input.strikeAvailable = true;
+                }, 70);
             }
         }
         
