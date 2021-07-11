@@ -21,7 +21,7 @@ body {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	height: 330px;
+	height: 400px;
 	width: 440px;
 	display: flex;
 	flex-direction: column;
@@ -97,6 +97,17 @@ body {
 	top: 50%;
 	left: 30%;
 	color: black;
+}
+
+#game-over-label {
+	margin: 50px 0px 0px 0px;
+}
+
+#game-over-score-label {
+	color: white;
+	font-family: "Righteous";
+	font-size: 30px !important;
+	margin: 40px 0px 40px 0px;
 }
 
 #level-menu {

@@ -15,6 +15,7 @@ const continueButton = document.getElementById("continue-button");
 const startButton = document.getElementById("start-button");
 const gameOverRestartButton = document.getElementById("game-over-restart-button");
 const gameOverHomeButton = document.getElementById("game-over-home-button");
+const gameOverScoreLabel = document.getElementById("game-over-score-label");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
@@ -64,7 +65,6 @@ function updateLevel() {
 		levelLabel.innerHTML = level.toString();
 	}
 }
-
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -139,6 +139,7 @@ function gameOver() {
 	gameOverMenu.classList.remove("invisible");
 	gameOverRestartButton.onclick = gameRestart;
 	gameOverHomeButton.onclick = gameReset;
+	gameOverScoreLabel.innerHTML = "分數: " + score.toString();
 }
 
 function gameRestart() {
@@ -210,7 +211,7 @@ document.addEventListener("keydown", function (event) {
 				Input.events.c = true;
 			}
 		}
-		
+
 		if (event.key === "Escape") {
 			event.preventDefault();
 			gamePause();
@@ -222,7 +223,7 @@ document.addEventListener("keydown", function (event) {
 	}
 
 	if (event.key === "r") {
-		if (isPaused || isGameOver){
+		if (isPaused || isGameOver) {
 			gameRestart();
 		}
 	}
@@ -231,10 +232,10 @@ document.addEventListener("keydown", function (event) {
 		if (isPaused) {
 			gamePause();
 		}
-		if(!isStarted) {
+		if (!isStarted) {
 			gameStart();
 		}
-		if(isGameOver && event.key === "Enter") {
+		if (isGameOver && event.key === "Enter") {
 			gameReset();
 		}
 	}
