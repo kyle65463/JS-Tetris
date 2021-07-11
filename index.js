@@ -1,6 +1,6 @@
 import { Board } from "./board.js";
 import { Input } from "./input.js";
-import { TetrominoO } from "./tetromino/tetromino_o.js";
+import { DisplayBox } from "./display_box.js"
 import { TetrominoFactory } from "./tetromino/tetromino_factory.js";
 
 
@@ -12,38 +12,68 @@ canvas.height = window.innerHeight;
 
 const board = new Board();
 
+
 let timer = false;
 let movingTetromino = TetrominoFactory.randomCreate();
-let tetrominos = [];
+movingTetromino.setInBoard();
+
+let nextTetrominos = []
+let nextTetrominoBoxes = [];
+let posStartY = 200;
+for (let i = 0; i < 3; i++) {
+    let tetromino = TetrominoFactory.randomCreate();
+    let [posX, posY] = [1000, posStartY + i * DisplayBox.getHeight()]
+    tetromino.setNotInBoard(posX, posY);
+    nextTetrominos.push(tetromino);
+    nextTetrominoBoxes.push(new DisplayBox(posX, posY));
+}
+let grids = [];
+
+function setNextTetrominos(nextTetrominos) {
+    let i = 0;
+    for (let tetromino of nextTetrominos) {
+        let [posX, posY] = [1000, posStartY + i * DisplayBox.getHeight()]
+        tetromino.setNotInBoard(posX, posY);
+        i++;
+    }
+}
 
 function gameLoop() {
-    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Update
     movingTetromino.update(timer);
     if (!movingTetromino.movable) {
         for (let grid of movingTetromino.grids) {
-            tetrominos.push(grid);
+            grids.push(grid);
         }
-        movingTetromino = TetrominoFactory.randomCreate();
+        movingTetromino = nextTetrominos[0];
+        movingTetromino.setInBoard();
+
+        let newTetromino = TetrominoFactory.randomCreate();
+        nextTetrominos.splice(0, 1);
+        nextTetrominos.push(newTetromino);
+        setNextTetrominos(nextTetrominos);
     }
-    board.update(tetrominos);
+    board.update(grids);
 
     // Render
     board.render(ctx);
-    for (let grid of tetrominos) {
+    for (let grid of grids) {
         grid.render(ctx);
     }
     movingTetromino.render(ctx);
 
+    for (let displayBox of nextTetrominoBoxes) {
+        displayBox.render(ctx);
+    }
+    for (let tetromino of nextTetrominos) {
+        tetromino.render(ctx);
+    }
+
     // End
     timer = false;
     Input.available = false;
-
-    // setTimeout(()=>{
-        window.requestAnimationFrame(gameLoop.bind(this));
-    // }, 200)
-    
+    window.requestAnimationFrame(gameLoop.bind(this));
 }
 
 setInterval(() => {

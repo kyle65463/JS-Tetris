@@ -4,13 +4,14 @@ import { Grid } from "../grid.js";
 export class TetrominoR extends Tetromino{
     constructor() {
         super();
-        let posPair = [[5, 1], [4, 1], [3, 0], [3, 1]]
+        let posPair = [[2, 1], [1, 1], [0, 0], [0, 1]]
         for (let i = 0; i < this.numGrids; i++) {
             let grid = new Grid();
             grid.fillStyle = 'blue';
             [grid.idxX, grid.idxY]  = posPair[i];
             this.grids.push(grid);
         }
+        this.offsetX = 3;
         this.rotationOffsets = [[0, 0], [0, 0], [0, 0], [0, 0]];
         this.axisGrid = this.grids[1];
     }

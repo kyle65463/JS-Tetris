@@ -51,10 +51,6 @@ export class Board {
         return Board.getNumGridX() - 1;
     }
 
-    static canMoveDown() {
-
-    }
-
     static getLeftBounds() {
         return 0;
     }

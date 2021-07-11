@@ -11,6 +11,8 @@ export class Tetromino {
         this.rotationPhase = 0;
         this.rotationOffsets = [];
         this.shadows = [];
+        this.shrinkFactor = 0.7;
+        this.inBoard = true;
     }
 
     update(timer) {
@@ -244,10 +246,42 @@ export class Tetromino {
         this.rotationPhase %= 4;
     }
 
-    render(ctx) {
-        for (let grid of this.shadows) {
-            grid.render(ctx);
+    setInBoard() {
+        this.inBoard = true;
+        for (let grid of this.grids) {
+            grid.shrinkFactor = 1;
+            grid.idxX += this.offsetX;
+            grid.inBoard = true;
         }
+    }
+
+    setNotInBoard(posCenterX, posCenterY) {
+        this.inBoard = false;
+        let [idxRight, idxLeft, idxTop, idxBottom] = [-100, 100, 100, -100];
+        for (let grid of this.grids) {
+            idxRight = Math.max(grid.idxX, idxRight);
+            idxLeft = Math.min(grid.idxX, idxLeft);
+            idxTop = Math.min(grid.idxY, idxTop);
+            idxBottom = Math.max(grid.idxY, idxBottom);
+        }
+        let [disHoriz, disVert] = [idxRight - idxLeft + 1, idxBottom - idxTop + 1];
+        let posStartX = posCenterX - (disHoriz / 2) * Grid.getSize() * this.shrinkFactor;
+        let posStartY = posCenterY - (disVert / 2) * Grid.getSize() * this.shrinkFactor;
+        for (let grid of this.grids) {
+            grid.posX = posStartX + grid.idxX * Grid.getSize() * this.shrinkFactor;
+            grid.posY = posStartY + grid.idxY * Grid.getSize() * this.shrinkFactor;
+            grid.shrinkFactor = this.shrinkFactor;
+            grid.inBoard = false;
+        }
+    }
+
+    render(ctx) {
+        if (this.inBoard) {
+            for (let grid of this.shadows) {
+                grid.render(ctx);
+            }
+        }
+
         for (let grid of this.grids) {
             grid.render(ctx);
         }
