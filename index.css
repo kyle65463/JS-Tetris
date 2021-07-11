@@ -22,7 +22,23 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	height: 330px;
-	width: 400px;
+	width: 440px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	border: black 4px solid;
+	color: white;
+}
+
+#pause-menu{
+	background-color: rgba(100, 100, 100, 1);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 400px;
+	width: 440px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

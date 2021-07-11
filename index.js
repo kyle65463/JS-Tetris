@@ -10,10 +10,11 @@ const gameOverMenu = document.getElementById("game-over-menu");
 const scoreLabel = document.getElementById("score-label");
 const levelLabel = document.getElementById("level-label");
 const restartButton = document.getElementById("restart-button");
+const homeButton = document.getElementById("home-button");
 const continueButton = document.getElementById("continue-button");
 const startButton = document.getElementById("start-button");
 const gameOverRestartButton = document.getElementById("game-over-restart-button");
-const homeButton = document.getElementById("home-button");
+const gameOverHomeButton = document.getElementById("game-over-home-button");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
@@ -132,7 +133,7 @@ function gameStart() {
 function gameOver() {
 	gameOverMenu.classList.remove("invisible");
 	gameOverRestartButton.onclick = gameRestart;
-	homeButton.onclick = gameReset;
+	gameOverHomeButton.onclick = gameReset;
 }
 
 function gameRestart() {
@@ -159,10 +160,11 @@ function gameReset() {
 		clearInterval(gameInterval);
 		gameOverMenu.classList.add("invisible");
 		pauseMenu.classList.add("invisible");
-		homeButton.onclick = null;
+		gameOverHomeButton.onclick = null;
 		gameOverRestartButton.onclick = null;
 		continueButton.onclick = null;
 		restartButton.onclick = null;
+		homeButton.onclick = null;
 	}
 }
 
@@ -172,15 +174,17 @@ function gamePause() {
 		pauseMenu.classList.remove("invisible");
 		continueButton.onclick = gamePause;
 		restartButton.onclick = gameRestart;
+		homeButton.onclick = gameReset;
 	} else {
 		pauseMenu.classList.add("invisible");
+		homeButton.onclick = null;
 		continueButton.onclick = null;
 		restartButton.onclick = null;
 	}
 }
 
 document.addEventListener("keydown", function (event) {
-	if (isStarted) {
+	if (isStarted && !isGameOver) {
 		if (!isPaused) {
 			if (event.key === "ArrowLeft") {
 				Input.events.left = true;
@@ -201,19 +205,33 @@ document.addEventListener("keydown", function (event) {
 				Input.events.c = true;
 			}
 		}
+		
 		if (event.key === "Escape") {
 			event.preventDefault();
 			gamePause();
 		}
 	}
+
 	if (event.key === "Escape") {
 		event.preventDefault();
 	}
-	if (event.key === "a") {
-		gameStart();
+
+	if (event.key === "r") {
+		if (isPaused || isGameOver){
+			gameRestart();
+		}
 	}
-	if (event.key === "b") {
-		gameReset();
+
+	if (event.key === "Enter" || event.key === " ") {
+		if (isPaused) {
+			gamePause();
+		}
+		if(!isStarted) {
+			gameStart();
+		}
+		if(isGameOver && event.key === "Enter") {
+			gameReset();
+		}
 	}
 });
 
