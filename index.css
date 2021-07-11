@@ -1,0 +1,50 @@
+body {
+	margin: 0;
+	height: 100vh;
+	overflow: hidden;
+	background-color: LightYellow;
+}
+
+.container {
+	position: absolute;
+}
+
+#pause-menu {
+	background-color: rgba(100, 100, 100, 1);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 330px;
+	width: 400px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	border: black 4px solid;
+	color: white;
+}
+
+#pause-menu p {
+	font-size: 50px;
+	text-align: center;
+}
+
+#restart-button {
+	background-color: FireBrick !important;
+}
+
+#pause-menu button {
+	background-color: MediumSeaGreen;
+	border: none;
+	color: white;
+	padding: 12px 0px;
+	margin: 5px;
+	width: 140px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 19px;
+	border: black 4px solid;
+	border-radius: 15px;
+}
