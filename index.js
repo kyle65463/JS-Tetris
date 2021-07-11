@@ -19,6 +19,7 @@ const startButton = document.getElementById("start-button");
 const gameOverRestartButton = document.getElementById("game-over-restart-button");
 const gameOverHomeButton = document.getElementById("game-over-home-button");
 const gameOverScoreLabel = document.getElementById("game-over-score-label");
+const titleLabel = document.getElementById("title");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
@@ -125,6 +126,7 @@ function gameStart() {
 		AudioPlayer.playGameStartAudio();
 		startButton.onclick = null;
 		startButton.classList.add("invisible");
+		titleLabel.classList.add("invisible");
 		movingTetromino = TetrominoFactory.randomCreate();
 		movingTetromino.setInBoard();
 		isStarted = true;
@@ -166,6 +168,7 @@ function gameReset() {
 			gameStart();
 		};
 		startButton.classList.remove("invisible");
+		titleLabel.classList.remove("invisible");
 		score = 0;
 		numClearedLine = 0;
 		level = 1;

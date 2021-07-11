@@ -4,7 +4,7 @@ import { Grid } from "../grid.js";
 export class TetrominoT extends Tetromino{
     constructor() {
         super();
-        let posPair = [[0, 1], [1, 0], [1, 1], [2, 1]]
+        let posPair = [[0, 1], [1, 0], [1, 1], [2, 1]];
         for (let i = 0; i < this.numGrids; i++) {
             let grid = new Grid();
             grid.fillStyle = 'rgb(170, 0, 170)';
