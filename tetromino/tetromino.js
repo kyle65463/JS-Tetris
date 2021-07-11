@@ -46,6 +46,7 @@ export class Tetromino {
                 this.updateMovable();
             }
         }
+        
         this.updateShadow();
     }
 
@@ -273,6 +274,13 @@ export class Tetromino {
             grid.shrinkFactor = this.shrinkFactor;
             grid.inBoard = false;
         }
+    }
+
+    checkGameOver() {
+        for(let grid of this.grids) {
+            if(!Board.isGridValid(grid.idxX, grid.idxY)) return true;
+        }
+        return false;
     }
 
     render(ctx) {

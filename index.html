@@ -5,10 +5,16 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="./index.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Righteous&family=Roboto&display=swap"
+			rel="stylesheet"
+		/>
 		<script type="module" src="./index.js"></script>
 		<title>Document</title>
 	</head>
-	<body>
+	<body class="unselectable">
 		<div id="main-container" class="container">
 			<canvas></canvas>
 		</div>
@@ -17,6 +23,17 @@
 			<p>暫停遊戲</p>
 			<button id="continue-button">繼續</button>
 			<button id="restart-button">重新開始</button>
+		</div>
+
+		<div id="game-over-menu" class="container invisible">
+			<p>遊戲結束</p>
+			<button id="home-button">主頁</button>
+			<button id="game-over-restart-button">重新開始</button>
+		</div>
+
+		<div id="score-menu" class="container">
+			<p>分數:</p>
+			<p id="score-label">0</p>
 		</div>
 
 		<button id="start-button">開始遊戲</button>

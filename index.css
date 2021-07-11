@@ -3,6 +3,7 @@ body {
 	height: 100vh;
 	overflow: hidden;
 	background-color: LightYellow;
+	font-family: "Roboto";
 }
 
 .container {
@@ -10,10 +11,11 @@ body {
 }
 
 .invisible {
-    visibility: hidden;
+	visibility: hidden;
 }
 
-#pause-menu {
+#pause-menu,
+#game-over-menu {
 	background-color: rgba(100, 100, 100, 1);
 	position: absolute;
 	top: 50%;
@@ -29,12 +31,14 @@ body {
 	color: white;
 }
 
-#pause-menu p {
+#pause-menu p,
+#game-over-menu p {
 	font-size: 50px;
 	text-align: center;
 }
 
-#restart-button {
+#restart-button,
+#game-over-restart-button {
 	background-color: FireBrick !important;
 }
 
@@ -56,7 +60,8 @@ body {
 	border-radius: 15px;
 }
 
-#pause-menu button {
+#pause-menu button,
+#game-over-menu button {
 	background-color: MediumSeaGreen;
 	border: none;
 	color: white;
@@ -70,3 +75,29 @@ body {
 	border: black 4px solid;
 	border-radius: 15px;
 }
+
+#score-menu {
+	position: absolute;
+	top: 60%;
+	left: 30%;
+	color: black;
+}
+
+#score-menu p {
+	font-size: 19px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#score-label {
+	font-family: "Righteous";
+	font-size: 40px !important;
+}
+
+*.unselectable {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+ }

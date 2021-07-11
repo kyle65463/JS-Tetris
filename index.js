@@ -6,9 +6,13 @@ import { NextArea } from "./next_area.js";
 
 const canvas = document.querySelector("canvas");
 const pauseMenu = document.getElementById("pause-menu");
+const gameOverMenu = document.getElementById("game-over-menu");
+const scoreLabel = document.getElementById("score-label");
 const restartButton = document.getElementById("restart-button");
 const continueButton = document.getElementById("continue-button");
 const startButton = document.getElementById("start-button");
+const gameOverRestartButton = document.getElementById("game-over-restart-button");
+const homeButton = document.getElementById("home-button");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
@@ -23,11 +27,13 @@ let movingTetromino = null;
 let grids = [];
 let isPaused = false;
 let isStarted = false;
+let isGameOver = false;
+let score = 0;
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	// Update
-	if (isStarted && !isPaused) {
+	if (isStarted && !isPaused && !isGameOver) {
 		movingTetromino.update(timer);
 		if (!movingTetromino.movable) {
 			for (let grid of movingTetromino.grids) {
@@ -36,13 +42,17 @@ function gameLoop() {
 			movingTetromino = nextArea.getNextTetromino();
 			movingTetromino.setInBoard();
 		}
-		board.update(grids);
+		score += board.update(grids);
 		movingTetromino = holdArea.update(movingTetromino);
 		if (!movingTetromino) {
 			movingTetromino = nextArea.getNextTetromino();
 			movingTetromino.setInBoard();
 		}
 		nextArea.update();
+		isGameOver = movingTetromino.checkGameOver();
+		if (isGameOver) {
+			gameOver();
+		}
 	}
 
 	// Render
@@ -50,12 +60,14 @@ function gameLoop() {
 	holdArea.render(ctx);
 	nextArea.render(ctx);
 	if (isStarted) {
-		for (let grid of grids) grid.render(ctx);
 		movingTetromino.render(ctx);
-		if (isPaused) {
-			ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-			ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-		}
+		for (let grid of grids) grid.render(ctx);
+	}
+	scoreLabel.innerHTML = score.toString();
+
+	if (isPaused || isGameOver) {
+		ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+		ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	}
 
 	// End
@@ -85,20 +97,36 @@ function gameStart() {
 	}
 }
 
+function gameOver() {
+	gameOverMenu.classList.remove("invisible");
+	gameOverRestartButton.onclick = gameRestart;
+	homeButton.onclick = gameReset;
+}
+
+function gameRestart() {
+	gameReset();
+	gameStart();
+}
+
 function gameReset() {
 	if (isStarted) {
 		startButton.onclick = gameStart;
 		startButton.classList.remove("invisible");
+		score = 0;
 		movingTetromino = null;
 		isStarted = false;
 		isPaused = false;
+		isGameOver = false;
 		timer = false;
 		grids = [];
 		nextArea.reset();
 		holdArea.reset();
 		clearInterval(interval1);
 		clearInterval(interval2);
+		gameOverMenu.classList.add("invisible");
 		pauseMenu.classList.add("invisible");
+		homeButton.onclick = null;
+		gameOverRestartButton.onclick = null;
 		continueButton.onclick = null;
 		restartButton.onclick = null;
 	}
@@ -109,7 +137,7 @@ function gamePause() {
 	if (isPaused) {
 		pauseMenu.classList.remove("invisible");
 		continueButton.onclick = gamePause;
-		restartButton.onclick = gameReset;
+		restartButton.onclick = gameRestart;
 	} else {
 		pauseMenu.classList.add("invisible");
 		continueButton.onclick = null;
