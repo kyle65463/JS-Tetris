@@ -17,7 +17,21 @@ export class TetrominoFactory {
         TetrominoI,
     ];
 
+    static tetrominosMap = {
+        "tetromino_s": TetrominoS,
+        "tetromino_n": TetrominoN,
+        "tetromino_l": TetrominoL,
+        "tetromino_r": TetrominoR,
+        "tetromino_t": TetrominoT,
+        "tetromino_o": TetrominoO,
+        "tetromino_i": TetrominoI,
+    };
+
     static randomCreate() {
         return new TetrominoFactory.tetrominos[Math.floor(Math.random() * TetrominoFactory.tetrominos.length)];
+    }
+
+    static createFromName(name) {
+        return new TetrominoFactory.tetrominosMap[name];
     }
 }

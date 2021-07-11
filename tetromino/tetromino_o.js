@@ -14,5 +14,6 @@ export class TetrominoO extends Tetromino{
         this.offsetX = 4;
         this.rotationOffsets = [[0, -1], [1, 0], [0, 1], [-1, 0]];
         this.axisGrid = this.grids[2];
+        this.name = "tetromino_o"; 
     }
 }

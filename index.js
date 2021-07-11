@@ -2,7 +2,7 @@ import { Board } from "./board.js";
 import { Input } from "./input.js";
 import { DisplayBox } from "./display_box.js"
 import { TetrominoFactory } from "./tetromino/tetromino_factory.js";
-
+import { HoldArea } from "./hold_area.js";
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -17,6 +17,7 @@ let timer = false;
 let movingTetromino = TetrominoFactory.randomCreate();
 movingTetromino.setInBoard();
 
+// Next area
 let nextTetrominos = []
 let nextTetrominoBoxes = [];
 let posStartY = 200;
@@ -28,6 +29,9 @@ for (let i = 0; i < 3; i++) {
     nextTetrominoBoxes.push(new DisplayBox(posX, posY));
 }
 let grids = [];
+
+// Hold area
+let holdArea = new HoldArea();
 
 function setNextTetrominos(nextTetrominos) {
     let i = 0;
@@ -55,6 +59,16 @@ function gameLoop() {
         setNextTetrominos(nextTetrominos);
     }
     board.update(grids);
+    movingTetromino = holdArea.update(movingTetromino);
+    if (!movingTetromino) {
+        movingTetromino = nextTetrominos[0];
+        movingTetromino.setInBoard();
+
+        let newTetromino = TetrominoFactory.randomCreate();
+        nextTetrominos.splice(0, 1);
+        nextTetrominos.push(newTetromino);
+        setNextTetrominos(nextTetrominos);
+    }
 
     // Render
     board.render(ctx);
@@ -69,6 +83,7 @@ function gameLoop() {
     for (let tetromino of nextTetrominos) {
         tetromino.render(ctx);
     }
+    holdArea.render(ctx);
 
     // End
     timer = false;
@@ -99,6 +114,9 @@ document.addEventListener('keydown', function (event) {
     }
     if (event.key === " ") {
         Input.events.space = true;
+    }
+    if (event.key === "c") {
+        Input.events.c = true;
     }
 });
 
