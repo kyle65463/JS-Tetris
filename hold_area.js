@@ -23,9 +23,6 @@ export class HoldArea {
 		if (Input.holdAvailable && Input.events.c) {
 			Input.events.c = false;
 			Input.holdAvailable = false;
-			setTimeout(() => {
-				Input.holdAvailable = true;
-			}, 100);
 
 			let movingTetrominoName = movingTetromino.name;
 

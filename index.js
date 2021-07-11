@@ -82,6 +82,7 @@ function gameLoop() {
 			}
 			movingTetromino = nextArea.getNextTetromino();
 			movingTetromino.setInBoard();
+			Input.holdAvailable = true;
 		}
 		let [newScore, newNumClearedLine] = board.update(grids);
 		score += newScore * level;
@@ -116,6 +117,7 @@ function gameLoop() {
 
 	// End
 	timer = false;
+	Input.events.c = false;
 	window.requestAnimationFrame(gameLoop.bind(this));
 }
 
