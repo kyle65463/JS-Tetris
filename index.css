@@ -9,6 +9,10 @@ body {
 	position: absolute;
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 #pause-menu {
 	background-color: rgba(100, 100, 100, 1);
 	position: absolute;

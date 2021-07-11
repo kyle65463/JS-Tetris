@@ -15,6 +15,10 @@ export class HoldArea {
         this.displayBox = new DisplayBox(this.posX, this.posY);
     }
 
+    reset() {
+        this.holdTetromino = null;
+    }
+
     update(movingTetromino) {
         if (Input.available && Input.events.c) {
             Input.events.c = false;

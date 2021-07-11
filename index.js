@@ -7,7 +7,6 @@ import { NextArea } from "./next_area.js";
 const canvas = document.querySelector("canvas");
 const pauseMenu = document.getElementById("pause-menu");
 const ctx = canvas.getContext("2d");
-pauseMenu.parentNode.removeChild(pauseMenu);
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -17,15 +16,15 @@ const nextArea = new NextArea();
 const holdArea = new HoldArea();
 
 let timer = false;
-let movingTetromino = TetrominoFactory.randomCreate();
-movingTetromino.setInBoard();
+let movingTetromino = null;
 let grids = [];
 let isPaused = false;
+let isStarted = false;
 
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	// Update
-	if (!isPaused) {
+	if (isStarted && !isPaused) {
 		movingTetromino.update(timer);
 		if (!movingTetromino.movable) {
 			for (let grid of movingTetromino.grids) {
@@ -45,13 +44,15 @@ function gameLoop() {
 
 	// Render
 	board.render(ctx);
-	for (let grid of grids) grid.render(ctx);
-	movingTetromino.render(ctx);
 	holdArea.render(ctx);
 	nextArea.render(ctx);
-	if (isPaused) {
-		ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-		ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+	if (isStarted) {
+		for (let grid of grids) grid.render(ctx);
+		movingTetromino.render(ctx);
+		if (isPaused) {
+			ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+			ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+		}
 	}
 
 	// End
@@ -59,14 +60,6 @@ function gameLoop() {
 	Input.available = false;
 	window.requestAnimationFrame(gameLoop.bind(this));
 }
-
-setInterval(() => {
-	Input.available = true;
-}, 70);
-
-setInterval(() => {
-	timer = true;
-}, 1000);
 
 document.addEventListener("keydown", function (event) {
 	if (!isPaused) {
@@ -89,13 +82,19 @@ document.addEventListener("keydown", function (event) {
 			Input.events.c = true;
 		}
 	}
+	if (event.key === "a") {
+		startGame();
+	}
+	if (event.key === "b") {
+		gameReset();
+	}
 	if (event.key === "Escape") {
 		isPaused = !isPaused;
 		event.preventDefault();
 		if (isPaused) {
-			document.body.appendChild(pauseMenu);
+			pauseMenu.classList.remove("invisible");
 		} else {
-			pauseMenu.parentNode.removeChild(pauseMenu);
+			pauseMenu.classList.add("invisible");
 		}
 	}
 });
@@ -114,5 +113,36 @@ document.addEventListener("keyup", function (event) {
 		Input.events.up = false;
 	}
 });
+
+let interval1 = null;
+let interval2 = null;
+function startGame() {
+	if (!isStarted) {
+		movingTetromino = TetrominoFactory.randomCreate();
+		movingTetromino.setInBoard();
+		isStarted = true;
+
+		nextArea.intialize();
+		interval1 = setInterval(() => {
+			Input.available = true;
+		}, 70);
+
+		interval2 = setInterval(() => {
+			timer = true;
+		}, 1000);
+	}
+}
+
+function gameReset() {
+	if (isStarted) {
+		movingTetromino = null;
+		grids = [];
+		nextArea.reset();
+		holdArea.reset();
+		isStarted = false;
+		clearInterval(interval1);
+		clearInterval(interval2);
+	}
+}
 
 gameLoop();
