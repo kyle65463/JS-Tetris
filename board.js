@@ -103,7 +103,6 @@ export class Board {
             }
 
             if (numGrids >= Board.getNumGridX()) {
-                console.log('clear ' + i)
                 clearedLineIds.push(i);
             }
         }

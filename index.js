@@ -6,6 +6,9 @@ import { NextArea } from "./next_area.js";
 
 const canvas = document.querySelector("canvas");
 const pauseMenu = document.getElementById("pause-menu");
+const restartButton = document.getElementById("restart-button");
+const continueButton = document.getElementById("continue-button");
+const startButton = document.getElementById("start-button");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
@@ -61,8 +64,61 @@ function gameLoop() {
 	window.requestAnimationFrame(gameLoop.bind(this));
 }
 
+let interval1 = null;
+let interval2 = null;
+function gameStart() {
+	if (!isStarted) {
+		startButton.onclick = null;
+		startButton.classList.add("invisible");
+		movingTetromino = TetrominoFactory.randomCreate();
+		movingTetromino.setInBoard();
+		isStarted = true;
+
+		nextArea.intialize();
+		interval1 = setInterval(() => {
+			Input.available = true;
+		}, 70);
+
+		interval2 = setInterval(() => {
+			timer = true;
+		}, 1000);
+	}
+}
+
+function gameReset() {
+	if (isStarted) {
+		startButton.onclick = gameStart;
+		startButton.classList.remove("invisible");
+		movingTetromino = null;
+		isStarted = false;
+		isPaused = false;
+		timer = false;
+		grids = [];
+		nextArea.reset();
+		holdArea.reset();
+		clearInterval(interval1);
+		clearInterval(interval2);
+		pauseMenu.classList.add("invisible");
+		continueButton.onclick = null;
+		restartButton.onclick = null;
+	}
+}
+
+function gamePause() {
+	isPaused = !isPaused;
+	if (isPaused) {
+		pauseMenu.classList.remove("invisible");
+		continueButton.onclick = gamePause;
+		restartButton.onclick = gameReset;
+	} else {
+		pauseMenu.classList.add("invisible");
+		continueButton.onclick = null;
+		restartButton.onclick = null;
+	}
+}
+
 document.addEventListener("keydown", function (event) {
-	if (!isPaused) {
+	if (isStarted && !isPaused) {
 		if (event.key === "ArrowLeft") {
 			Input.events.left = true;
 		}
@@ -81,21 +137,19 @@ document.addEventListener("keydown", function (event) {
 		if (event.key === "c") {
 			Input.events.c = true;
 		}
+		if (event.key === "Escape") {
+			event.preventDefault();
+			gamePause();
+		}
+	}
+	if (event.key === "Escape") {
+		event.preventDefault();
 	}
 	if (event.key === "a") {
-		startGame();
+		gameStart();
 	}
 	if (event.key === "b") {
 		gameReset();
-	}
-	if (event.key === "Escape") {
-		isPaused = !isPaused;
-		event.preventDefault();
-		if (isPaused) {
-			pauseMenu.classList.remove("invisible");
-		} else {
-			pauseMenu.classList.add("invisible");
-		}
 	}
 });
 
@@ -114,35 +168,5 @@ document.addEventListener("keyup", function (event) {
 	}
 });
 
-let interval1 = null;
-let interval2 = null;
-function startGame() {
-	if (!isStarted) {
-		movingTetromino = TetrominoFactory.randomCreate();
-		movingTetromino.setInBoard();
-		isStarted = true;
-
-		nextArea.intialize();
-		interval1 = setInterval(() => {
-			Input.available = true;
-		}, 70);
-
-		interval2 = setInterval(() => {
-			timer = true;
-		}, 1000);
-	}
-}
-
-function gameReset() {
-	if (isStarted) {
-		movingTetromino = null;
-		grids = [];
-		nextArea.reset();
-		holdArea.reset();
-		isStarted = false;
-		clearInterval(interval1);
-		clearInterval(interval2);
-	}
-}
-
+startButton.onclick = gameStart;
 gameLoop();
